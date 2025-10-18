@@ -1,0 +1,52 @@
+.sidebar {
+  width: 50px; /* Collapsed width - enough for icons */
+  min-width: 50px;
+  background-color: #282a2c;
+  color: white;
+  transition: width 2s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #282a2c;
+}
+
+.sidebar.open {
+  position: abosolute;
+  width: 250px;
+  z-index: 999;
+}
+
+.sidebar-button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.sidebar-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-button svg {
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-text {
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s; /* Slight delay for smoother effect */
+}
+
+.sidebar.open .sidebar-text {
+  opacity: 1;
+}

@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #1b1c1d;
+  max-height: 100vh;
+}
+
+.App {
+  font-family: sans-serif;
+}
+
+.Main {
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.interface-area {
+  min-height: 90vh;
+  max-height: 90vh;
+  display: flex;
+  outline: 1px solid red;
+}
+
+/* Transform-based sliding sidebar */
