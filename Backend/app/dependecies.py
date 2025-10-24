@@ -1,15 +1,19 @@
 from typing import Annotated
-from fastapi import Header, HTTPException,Cookie,Depends,Request
-from sqlmodel import Session,select
+
+from fastapi import Cookie, Depends, HTTPException, Request
+from google.auth.transport import requests
+from google.oauth2 import id_token
+from sqlmodel import Session, select
+import os
+
+from dotenv import load_dotenv
+
 from .Database.database import get_session
 from .Database.Users import User
 
+load_dotenv()
 
-from google.oauth2 import id_token
-from google.auth.transport import requests
-
-
-GOOGLE_CLIENT_ID = '635938163535-8a3sug2kct2hbq94hi4dp9j0n0qit12b.apps.googleusercontent.com'
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 async def verify_user(request: Request,session: Annotated [Session,Depends(get_session)] ,token: str =  Cookie(None)):
     '''
     Dependecy to check user auth status.

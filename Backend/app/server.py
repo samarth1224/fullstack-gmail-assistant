@@ -1,15 +1,10 @@
-from fastapi import FastAPI,WebSocket,WebSocketDisconnect
-from pydantic import BaseModel
-from google.adk.sessions import InMemorySessionService
-from google.adk.runners import Runner
-from agent.agent import root_agent
-from fastapi.middleware.cors import CORSMiddleware
-from google.genai import types
 import asyncio
-from .router import users
-from .router import websocket
-from .authentication import authentication
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from .authentication import authentication
+from .router import users, websocket
 
 
 APP_NAME = 'gmail_agent'

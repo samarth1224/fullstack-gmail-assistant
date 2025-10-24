@@ -1,15 +1,17 @@
 # 'users'  route.
 import datetime
-from fastapi import APIRouter,Depends,Request,HTTPException
-from sqlmodel import Session,select
-from typing import  Annotated
-from ..dependecies import verify_user
-from ..Database.Users import User, UserPublic
-from ..Database.messages import Message,MessagePublic
-from ..Database.conversation import  Conversation,ConversationPublic
-from ..Database.database import get_session
-from agent.runner import create_session
+from typing import Annotated
 from uuid import uuid4
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlmodel import Session, select
+
+from agent.runner import create_session
+from ..dependecies import verify_user
+from ..Database.conversation import Conversation, ConversationPublic
+from ..Database.database import get_session
+from ..Database.messages import Message
+from ..Database.Users import User, UserPublic
 
 
 SessionDep = Annotated[Session,  Depends(get_session)]

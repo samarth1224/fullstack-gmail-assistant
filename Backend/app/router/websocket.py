@@ -1,29 +1,27 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect,Depends
-from agent.runner import call_agent_async, runner, create_session
-from ..dependecies import verify_user
-from ..Database.database import get_session
-from ..Database.messages import Message,MessagePublic
-from ..Database.conversation import  Conversation
-from ..Database.Users import User
-from ..Database.database import get_session,Session
-from typing import Annotated
 from datetime import datetime
-from sqlmodel import Session,select
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+from sqlmodel import Session, select
+
+from Backend.Database.conversation import Conversation
+from Backend.Database.database import get_session
+from Backend.Database.messages import Message
+from Backend.Database.Users import User
+from agent.runner import call_agent_async, create_session, runner
+from ..dependecies import verify_user
 
 VerifyUserDep = Annotated[User, Depends(verify_user)]
 SessionDep = Annotated[Session,  Depends(get_session)]
 router = APIRouter(prefix='/ws')
 
-# async def create_session(user_id,conversation_id):
-#     return await session_service.create_session(app_name=APP_NAME,
-#                                                 user_id=user_id,
-#                                                 session_id=conversation_id)
+
 
 @router.websocket("/{conversationid}")
 async def message(session:SessionDep, websocket: WebSocket,conversationid: str):
     await websocket.accept()
     user_id = session.exec(select(Conversation.user_id).where(Conversation.conversation_id == conversationid)).first()
-    print("websocket intial")
+    
 
     try:
         while True:
@@ -44,6 +42,7 @@ async def message(session:SessionDep, websocket: WebSocket,conversationid: str):
                                    runner=runner,
                                    user_id=user_id,
                                    session_id=conversationid,
-                                   websocket=websocket)
+                                   websocket=websocket,
+                                   session=session)
     except WebSocketDisconnect:
         print(f"Client disconnected from {conversationid}")

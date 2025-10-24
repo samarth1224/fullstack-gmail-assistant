@@ -1,10 +1,10 @@
 #Handles User relation in database.
 
 
-from uuid import UUID,uuid4
 from datetime import datetime
-from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field,SQLModel
+from uuid import UUID, uuid4
+
+from sqlmodel import Field, SQLModel
 
 class UserBase(SQLModel):
     username: str = Field(nullable=False, max_length=255)
@@ -16,6 +16,9 @@ class User(UserBase, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     emailid: str = Field(nullable=False)
     sub: str = Field(nullable=False, unique= True)
+
+    access_token: str | None = Field(default=None)
+    refresh_token: str | None = Field(default=None)
 
 class UserPublic(UserBase):
     user_id: UUID
