@@ -6,16 +6,23 @@ import os
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from google.genai import types
+from google.adk.parts import Part
+from google.adk.auth import AuthConfig
 
 from Backend.Database.conversation import Conversation
 from Backend.Database.database import get_session
 from Backend.Database.messages import Message
 from Backend.Database.Users import User, UserPublic
+from sqlmodel import Session
+
 from .agent import root_agent
+from agent.tools.tool import GmailToolExecutor
+
 from dotenv import load_dotenv
-from sqlmodel import Session # Added for session management
+ 
 
 load_dotenv()
+REDIRECT_URI = os.getenv('REDIRECT_URI', "http://127.0.0.1:8005/auth/callback")
 
 APP_NAME = "gmail_agent"
 
@@ -28,14 +35,15 @@ runner = Runner(app_name=APP_NAME,
                 session_service=session_service,
                 agent=root_agent)
 
+
 async def create_session(user_id,conversation_id):
     return await session_service.create_session(app_name=APP_NAME,
                                                 user_id=str(user_id),
                                                 session_id=str(conversation_id))
 
-async def call_agent_async(prompt: str, runner, user_id, session_id, websocket, session: Session):
-    content = types.Content(role="user", parts=[types.Part(text=prompt)])
+async def call_agent_async(prompt: str,runner, user_id, session_id, websocket):
 
+    content = types.Content(role="user", parts=[types.Part(text=prompt)])
     final_response_text = "Agent did not produce a final response."
 
     async for event in runner.run_async(user_id=str(user_id), session_id=str(session_id), new_message=content):
@@ -61,9 +69,11 @@ async def call_agent_async(prompt: str, runner, user_id, session_id, websocket, 
     }
 
     message = Message.model_validate(message_dict)
-    session.add(message)
-    session.commit()
-    session.refresh(message)
-    # dbsession.close() # Removed session close here as it's managed by FastAPI
+    dbsession.add(message)
+    dbsession.commit()
+    dbsession.refresh(message)
+    dbsession.close()
 
     await websocket.send_text(f"final response text = {final_response_text}")
+   
+    

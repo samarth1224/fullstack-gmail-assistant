@@ -23,8 +23,7 @@ load_dotenv()
 REDIRECT_URI = os.getenv('REDIRECT_URI', "http://127.0.0.1:8005/auth/callback")
 SCOPES = ['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID') # For token verification
-CLIENT_ID_RAW = os.getenv('GOOGLE_CLIENT_ID_RAW') # For OAuth flow
-CLIENT_SECRET_RAW = os.getenv('GOOGLE_CLIENT_SECRET_RAW') # For OAuth flow
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET') # For OAuth flow
 
 SessionDep = Annotated[Session,  Depends(get_session)]
 
@@ -35,18 +34,19 @@ router = APIRouter(prefix='/auth')
 
 @router.get('/login')
 async def login():
-    if not CLIENT_ID_RAW or not CLIENT_SECRET_RAW:
+    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise HTTPException(status_code=500, detail="Google OAuth client ID or secret not configured.")
-
-    client_config = {
-        "web": {
-            "client_id": CLIENT_ID_RAW,
-            "client_secret": CLIENT_SECRET_RAW,
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
+        client_config = {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": os.getenv('AUTH_URI'),
+                "token_uri": os.getenv('TOKEN_URI'),
+                "auth_provider_x509_cert_url": os.getenv('auth_provider_x509_cert_url')
+            }
         }
-    }
+
+      
     flow = Flow.from_client_config(
         client_config,
         scopes=SCOPES
@@ -68,11 +68,11 @@ async def callback(request: Request,response: Response, session: SessionDep):
     try:
         client_config = {
             "web": {
-                "client_id": CLIENT_ID_RAW,
-                "client_secret": CLIENT_SECRET_RAW,
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": os.getenv('AUTH_URI'),
+                    "token_uri": os.getenv('TOKEN_URI'),
+                    "auth_provider_x509_cert_url": os.getenv('auth_provider_x509_cert_url')
             }
         }
         flow = Flow.from_client_config(
@@ -88,19 +88,42 @@ async def callback(request: Request,response: Response, session: SessionDep):
         raise(HTTPException(status_code=400, detail="Token exchange failed"))
 
     response.set_cookie(key = 'token', value=credential.id_token,httponly=True,samesite="None",secure=True)
+    
     try:
-        user_info = id_token.verify_token(credential.id_token,requests.Request(), GOOGLE_CLIENT_ID)
-        user_info = {'username':"samarth" ,'emailid': user_info['email'],'sub':user_info['sub'] }
-    except Exception as e:
-        raise (HTTPException(status_code=400, detail="failed to verify token"))
-    new_user = User.model_validate(user_info)
-    try:
-        session.add(new_user)
-        session.commit()
-        session.refresh(new_user)
-    except :
-        print('user already in database')
+        user_info_dict = id_token.verify_oauth2_token(credential.id_token, requests.Request(), GOOGLE_CLIENT_ID)
 
-    return new_user
+     
+        db_user = session.get(User, user_info_dict['sub'])
+
+        if db_user:
+
+            print("User already in database. Updating tokens.")
+            db_user.access_token = credential.access_token
+     
+            if credential.refresh_token:
+                db_user.refresh_token = credential.refresh_token
+            session.add(db_user)
+            user_to_return = db_user
+        else:
+         
+            print("Creating new user in database.")
+            new_user = User(
+                sub=user_info_dict['sub'],
+                emailid=user_info_dict['email'],
+                username=user_info_dict.get('name', 'N/A'), 
+                access_token=credential.access_token,
+                refresh_token=credential.refresh_token
+            )
+            session.add(new_user)
+            user_to_return = new_user
+
+        session.commit()
+        session.refresh(user_to_return)
+
+    except Exception as e:
+        session.rollback() 
+        raise HTTPException(status_code=400, detail=f"Failed to verify token or save user: {e}")
+
+    return user_to_return
 
 

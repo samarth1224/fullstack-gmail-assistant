@@ -31,4 +31,5 @@ async def verify_user(request: Request,session: Annotated [Session,Depends(get_s
     user = session.exec(select(User).where(User.sub == sub)).first()
     if not user:
         raise HTTPException(status_code=401, detail="user not logged in or needs to sign up!")
+    
     return user
