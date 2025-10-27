@@ -90,7 +90,7 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
         <li
           key={conv.conversation_id}
           className="sidebar-text chat-history-item"
-          onClick={() => openConversation(conversation_id)}
+          onClick={() => openConversation(conv.conversation_id)}
         >
           {conv.conversation_name}
         </li>

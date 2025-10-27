@@ -4,10 +4,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlmodel import Session, select
 
-from Backend.Database.conversation import Conversation
-from Backend.Database.database import get_session
-from Backend.Database.messages import Message
-from Backend.Database.Users import User
+from app.Database.conversation import Conversation
+from app.Database.database import get_session
+from app.Database.messages import Message
+from app.Database.Users import User
 from agent.runner import call_agent_async, create_session, runner
 from ..dependecies import verify_user
 
@@ -21,6 +21,7 @@ router = APIRouter(prefix='/ws')
 async def message(session:SessionDep, websocket: WebSocket,conversationid: str):
     await websocket.accept()
     user_id = session.exec(select(Conversation.user_id).where(Conversation.conversation_id == conversationid)).first()
+    
     
 
     try:
@@ -43,6 +44,6 @@ async def message(session:SessionDep, websocket: WebSocket,conversationid: str):
                                    user_id=user_id,
                                    session_id=conversationid,
                                    websocket=websocket,
-                                   session=session)
+                                )
     except WebSocketDisconnect:
         print(f"Client disconnected from {conversationid}")

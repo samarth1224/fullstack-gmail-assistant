@@ -10,7 +10,7 @@ from google.oauth2 import id_token
 import os
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
-from sqlmodel import Session
+from sqlmodel import Session,select
 from starlette.responses import RedirectResponse
 
 from dotenv import load_dotenv
@@ -36,7 +36,7 @@ router = APIRouter(prefix='/auth')
 async def login():
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise HTTPException(status_code=500, detail="Google OAuth client ID or secret not configured.")
-        client_config = {
+    client_config = {
             "web": {
                 "client_id": GOOGLE_CLIENT_ID,
                 "client_secret": GOOGLE_CLIENT_SECRET,
@@ -62,7 +62,7 @@ async def login():
 
 @router.get('/callback')
 async def callback(request: Request,response: Response, session: SessionDep):
-    if not CLIENT_ID_RAW or not CLIENT_SECRET_RAW:
+    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise HTTPException(status_code=500, detail="Google OAuth client ID or secret not configured.")
 
     try:
@@ -84,8 +84,10 @@ async def callback(request: Request,response: Response, session: SessionDep):
         flow.fetch_token(code= request.query_params.get('code'))
 
         credential = flow.credentials
+        print(credential)
+
     except Exception as e:
-        raise(HTTPException(status_code=400, detail="Token exchange failed"))
+        raise(HTTPException(status_code=400, detail=f"Token exchange failed {e}"))
 
     response.set_cookie(key = 'token', value=credential.id_token,httponly=True,samesite="None",secure=True)
     
@@ -93,12 +95,13 @@ async def callback(request: Request,response: Response, session: SessionDep):
         user_info_dict = id_token.verify_oauth2_token(credential.id_token, requests.Request(), GOOGLE_CLIENT_ID)
 
      
-        db_user = session.get(User, user_info_dict['sub'])
+        statement = select(User).where(User.sub == user_info_dict['sub'])
+        db_user = session.exec(statement).first()
 
         if db_user:
 
             print("User already in database. Updating tokens.")
-            db_user.access_token = credential.access_token
+            db_user.access_token = credential.token
      
             if credential.refresh_token:
                 db_user.refresh_token = credential.refresh_token

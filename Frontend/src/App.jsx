@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import InterfaceArea from "./component/interfacearea";
-import InfoArea from "./component/infoarea";
 import Login from "./pages/login";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Navigate, useLocation } from "react-router-dom";
@@ -48,7 +47,6 @@ function CheckAuth({ children }) {
 function Main() {
   return (
     <div className="Main">
-      <InfoArea />
       <InterfaceArea />
     </div>
   );

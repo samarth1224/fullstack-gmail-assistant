@@ -13,13 +13,13 @@ from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from google.adk import tool
+
 from google.adk.sessions import DatabaseSessionService
 from google.adk.tools import ToolContext,FunctionTool
 
 from app.Database.Users import User
 from app.Database.database  import get_session
-from sqlmodel import Session
+from sqlmodel import Session,select
 
 load_dotenv()
 
@@ -27,6 +27,17 @@ load_dotenv()
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID') # For token verification
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET') # For OAuth flow
 
+
+def update_conversation_name(tool_context: ToolContext,updated_name: str):
+    """update the conversation name.
+        Args: 
+            updated_name: The new name of the conversation. Must be short and precise and overview of the user conversation/session history.
+        Returns: 
+            Dict with operation result
+    """
+    tool_context.state['conv_name'] = updated_name
+    return {'result':'success',
+    'updated_name': updated_name}
 
 def send_email(tool_context: ToolContext,to: str,
                      subject: str,
@@ -56,15 +67,15 @@ def send_email(tool_context: ToolContext,to: str,
             client_secret=GOOGLE_CLIENT_SECRET,
         )
     except Exception as e:
-        return {'status': 'error','error_message':f'{e}.Please authorize'}
+        return {"success": False,'error_message':f'{e}.Please authorize'}
 
     if not creds or not creds.valid:
-        return {"status": "error", "error_message": "Cannot proceed without valid credentials."}
+        return {"success": False, "error_message": "Cannot proceed without valid credentials."}
 
         # Validate inputs
     if not to or not subject or not content:
         return {
-            "success": False,
+           "success": False,
             "message": "Missing required fields: to, subject, and content are required"
         }
 
@@ -76,7 +87,7 @@ def send_email(tool_context: ToolContext,to: str,
         message = EmailMessage()
         message.set_content(content)
         message["To"] = to
-        message["From"] = from_email
+        message["From"] = current_user.emailid
         message["Subject"] = subject
 
         # Encode and send

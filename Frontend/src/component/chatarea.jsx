@@ -85,12 +85,42 @@ export default function ChatArea({ chats, setChat ,currentConversationID, setCur
     // Listen for messages
     ws.current.onmessage = (event) => {
       console.log("Received:", event.data);
-      setChat((prev) => [
-        ...prev,
-        { id: Date.now(), type: "ai", message: event.data },
-      ]);
+      const data = JSON.parse(event.data)
+      if (data.response_type === 'final'){
+          setChat(prev => {
+            if (prev[prev.length - 1].type === 'user'){
+              return [...prev,{id:Date.now(),type:'ai',message:data.content.message}]
+            }
+            const updatedChats = prev.map((msg,i)=>{
+            if( i === prev.length-1 && msg.type === 'ai'){
+              return {...msg,message: msg.message +"\n" + data.content.message}
+            }else{
+              return msg;
+            }});
+            return updatedChats;
+          });
+    }
+      else if(data.response_type === "tool_call"){
+         setChat((prev)=>[
+          ...prev,
+          {id:Date.now(),type:'ai',message:'using: '+data.content.tool_name}
+        ])
+      }
+      else if (data.response_type === 'tool_response'){
+      setChat(prev => {
+            const updatedChats = prev.map((msg,i)=>{
+            if( i === prev.length-1){
+              return {...msg,message: msg.message + "\n" + data.content.tool_response.message};
+            }
+            else{
+              return msg;
+            }
+          })
+            return updatedChats;
+      });
+       
+      }
     };
-
     // On error
     ws.current.onerror = (error) => {
       console.error("WebSocket error:", error);

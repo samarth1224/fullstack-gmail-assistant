@@ -7,10 +7,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, select
 
 from agent.runner import create_session
+
 from ..dependecies import verify_user
 from ..Database.conversation import Conversation, ConversationPublic
 from ..Database.database import get_session
-from ..Database.messages import Message
+from ..Database.messages import Message,MessagePublic
 from ..Database.Users import User, UserPublic
 
 
@@ -25,11 +26,11 @@ async def users(user : VerifyUserDep,request: Request):
     print(request.cookies)
     return user
 
-@router.get('/websocket',response_model=UserPublic)
-def get_websocket_token(user : VerifyUserDep):
-    '''this function checks if its the genuine user or not and than generates a random ID
-    sends this to server which uses it for securly connecting with websocket.'''
-    return user
+# @router.get('/websocket',response_model=UserPublic)
+# def get_websocket_token(user : VerifyUserDep):
+#     '''this function checks if user is authenticated or not and than generates a random ID
+#     sends this to server which uses it for securly connecting with websocket.'''
+#     return user
 
 @router.get('/conversations', response_model= list[ConversationPublic])
 async def conversations(session: SessionDep, user: VerifyUserDep): 
@@ -37,11 +38,14 @@ async def conversations(session: SessionDep, user: VerifyUserDep):
     return conversation
 
 @router.get('/messages/{conversation_id}', response_model=list[MessagePublic])
-async def messages(conversation_id: uuid4, session: SessionDep,user: VerifyUserDep):
+async def messages(conversation_id: str, session: SessionDep,user: VerifyUserDep):
     message = session.exec(select(Message).where((Message.conversation_id == conversation_id),(Message.user_id == user.user_id))).all()
+    print(f'real message = {message}')
     if message:
+        print(message)
         return message
     else:
+        print(message)
         raise HTTPException(status_code=403,detail='You are not authorized to view this conversation or it does not exist!')
 
 @router.post('/newconversation')
