@@ -1,0 +1,91 @@
+.Dashboard {
+    width: 100%;
+    min-height: 100vh; /* Make it fill the viewport */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    position: relative; /* Needed for the background blob */
+    overflow: hidden; /* Hide anything that goes outside */
+  }
+  
+  /* --- Banner Area (now centered on the page) --- */
+  .banner-area {
+    padding: 20px;
+    text-align: center;
+    z-index: 1; /* Keep it above the background blob */
+  }
+  
+  .banner-area h1 {
+    margin: 0;
+    font-size: 5rem; /* Large and impactful */
+    font-weight: 400; /* Lighter font-weight for elegance */
+    letter-spacing: -1px; /* Tighter letter spacing */
+    color: #e0e6ed; /* Elegant light cream/gold-like color */
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.05); /* Very subtle glow */
+  }
+  
+  .banner-subtitle {
+    margin: 15px 0 0;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: #9aa7b3; /* Slightly darker subtitle text */
+    opacity: 0.9;
+  }
+  
+  /* --- Button Area --- */
+  .button-area {
+    margin-top: 40px; /* Space below the banner text */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Space between buttons */
+    z-index: 1; /* Keep it above the background blob */
+  }
+  
+  /* --- General Button Styles --- */
+  .btn {
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 9999px; /* Fully rounded/pill shape */
+    cursor: pointer;
+    border: none; /* Default to no border, define in specific buttons */
+    transition: all 0.3s ease-out;
+    display: flex; /* Allow text and arrow to be inline */
+    align-items: center;
+    gap: 8px; /* Space between text and arrow */
+  }
+  
+  /* Primary Button (Solid Blue Gradient) */
+  .btn-primary {
+    background: linear-gradient(
+      90deg,
+      #4285f4,
+      #669df6
+    ); /* Google's signature blue gradient */
+    color: white;
+    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.5);
+    filter: brightness(1.1); /* Slightly brighter on hover */
+  }
+  
+  /* Secondary Button (Outlined/Ghost) */
+  .btn-secondary {
+    background-color: #1a1e26; /* Darker background, but still part of the theme */
+    color: #9aa7b3; /* Lighter text for the ghost button */
+    border: 1px solid #3c4043; /* Subtle dark border */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    background-color: #2a2f38; /* Slightly lighter dark background on hover */
+    border-color: #669df6; /* Blue border on hover */
+    color: #669df6; /* Blue text on hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import InterfaceArea from "./component/interfacearea";
+import Home from "./pages/home"
 import Login from "./pages/login";
+import Dashboard from "./pages/dashboard";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -31,57 +32,54 @@ function CheckAuth({ children }) {
 
   if (authStatus) {
     // logged in
-    if (location.pathname === "/login") {
+    if (location.pathname === "/login"|| location.pathname === '/') {
       return <Navigate to="/app" replace />;
     }
     return children;
   } else {
     // not logged in
-    if (location.pathname !== "/login") {
       return <Navigate to="/login" replace />;
-    }
-    return children;
+
   }
 }
 
-function Main() {
-  return (
-    <div className="Main">
-      <InterfaceArea />
-    </div>
-  );
-}
 
-function home() {
-  return <div> Home </div>;
-}
+
+
 
 export default function App() {
-  return (
-    <Router>
-      <nav>
-        <Link to="/login">Login</Link> | <Link to="/app">app</Link>
-      </nav>
+  return (<Router>
       <Routes>
+        
+
+        <Route
+          path="/"
+          element={
+            <CheckAuth>
+            <Dashboard />
+            </CheckAuth>}
+        />
+        
+
         <Route
           path="/login"
           element={
             <CheckAuth>
-              {" "}
-              <Login />{" "}
-            </CheckAuth>
+            <Login />
+          </CheckAuth>
           }
         />
+        
+
         <Route
           path="/app"
           element={
-           <CheckAuth>
-            <Main />
-        </CheckAuth>
-
+            <CheckAuth>
+              <Home />
+            </CheckAuth>
           }
         />
+        
       </Routes>
-    </Router>
-  );
+    </Router>);
 }

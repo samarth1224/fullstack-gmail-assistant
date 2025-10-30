@@ -49,12 +49,33 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
           withCredentials: true,
         }
       );
+        const chats = response.data.reduce((acc, currentMsg) => {
+        const lastProcessedMsg = acc[acc.length - 1];
+        if (lastProcessedMsg &&
+            lastProcessedMsg.type === 'ai' &&
+            currentMsg.message_type === 'ai') {
+            lastProcessedMsg.message += "\n" + currentMsg.message_content;
+        } else if (currentMsg.message_type === 'user') {
+            // Push all user messages
+            acc.push({
+                id: currentMsg.message_id,
+                type: currentMsg.message_type,
+                message: currentMsg.message_content,
+            });
+    
+        } else if (currentMsg.message_type === 'ai' &&
+                   (!lastProcessedMsg || lastProcessedMsg.type === 'user')) {
+            
+            acc.push({
+                id: currentMsg.message_id,
+                type: currentMsg.message_type,
+                message: currentMsg.message_content,
+            });
+        }
+    
+        return acc;
+    }, []);
 
-      const chats = response.data.map(msg => (
-        {id:msg.message_id,
-          type:msg.message_type,
-          message:msg.message_content,
-        }));
       setChat(chats);
       setCurrentConversationID(id);
     } catch (error) {

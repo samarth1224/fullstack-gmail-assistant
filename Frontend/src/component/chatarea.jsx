@@ -63,7 +63,7 @@ function InputContainer({ input, onInput, onClick }) {
   );
 }
 
-export default function ChatArea({ chats, setChat ,currentConversationID, setCurrentConversationID}) {
+export default function ChatArea({ chats, setChat ,currentConversationID, setCurrentConversationID,conversations ,setConversations}) {
   const [input, setInput] = useState("");
   
   const ws = useRef(null);
@@ -147,6 +147,8 @@ export default function ChatArea({ chats, setChat ,currentConversationID, setCur
       );
   
       setCurrentConversationID(response.data.conversation_id);
+      setConversations((prev)=>[...prev,{conversation_id:response.data.conversation_id,conversation_name:'New Conversation'}])
+      
     } catch (error) {
       console.error("Error:", error);
     }
