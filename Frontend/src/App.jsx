@@ -6,13 +6,14 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-function CheckAuth({ children }) {
-  const location = useLocation();
+function useAuth() {
   const [authStatus, setAuthStatus] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation(); 
   useEffect(() => {
     let active = true;
     const verifyAuth = async () => {
+      setIsLoading(true);
       try {
         await axios.get("http://127.0.0.1:8005/users/", {
           withCredentials: true,
@@ -20,66 +21,82 @@ function CheckAuth({ children }) {
         if (active) setAuthStatus(true);
       } catch (error) {
         if (active) setAuthStatus(false);
+      } finally {
+        if (active) setIsLoading(false);
       }
     };
     verifyAuth();
     return () => {
       active = false;
     };
-  }, [location.pathname]);
-
-  
-
-  if (authStatus) {
-    // logged in
-    if (location.pathname === "/login"|| location.pathname === '/') {
-      return <Navigate to="/app" replace />;
-    }
-    return children;
-  } else {
-    // not logged in
-      return <Navigate to="/login" replace />;
-
-  }
+  }, [location.pathname]); 
+  return { authStatus, isLoading };
 }
 
+function PrivateRoute({ children }) {
+  const { authStatus, isLoading } = useAuth();
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (!authStatus) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
+
+
+function PublicOnlyRoute({ children }) {
+  const { authStatus, isLoading } = useAuth();
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (authStatus) {
+    return <Navigate to="/app" replace />;
+  }
+  return children;
+}
+
+  
 
 
 
 
 export default function App() {
-  return (<Router>
-      <Routes>
-        
-
-        <Route
+  return (
+  
+ <Router>
+  <Routes>
+      <Route
           path="/"
           element={
-            <CheckAuth>
-            <Dashboard />
-            </CheckAuth>}
-        />
-        
-
-        <Route
-          path="/login"
-          element={
-            <CheckAuth>
-            <Login />
-          </CheckAuth>
+            <PublicOnlyRoute>
+              <Dashboard />
+            </PublicOnlyRoute>
           }
         />
         
-
+        <Route
+          path="/login"
+          element={
+            <PublicOnlyRoute>
+              <Login />
+            </PublicOnlyRoute>
+          }
+        />
+        
+        {/* --- Private Route --- */}
         <Route
           path="/app"
           element={
-            <CheckAuth>
+            <PrivateRoute>
               <Home />
-            </CheckAuth>
+            </PrivateRoute>
           }
         />
         
       </Routes>
-    </Router>);
+    </Router>
+  );
 }
+
