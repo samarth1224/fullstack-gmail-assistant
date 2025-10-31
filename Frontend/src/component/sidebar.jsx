@@ -12,9 +12,9 @@ import "./css/sidebar.css";
 
 library.add(fas, far, fab);
 
-export default function SideBar({ chat, setChat, currentConversationID, setCurrentConversationID}) {
+export default function SideBar({ chat, setChat, currentConversationID, setCurrentConversationID,conversations,setConversations}) {
   const [sideBarOpen, setSideBarOpen] = useState(true);
-  const [conversations, setConversations] = useState(null);
+  
 
   const toggleSidebar = () => {
     setSideBarOpen((prev) => !prev);
@@ -102,7 +102,14 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
           <FontAwesomeIcon icon="fa-regular fa-edit" />
           <span className="sidebar-text">New Chat</span>
         </button>
+        <button className="sidebar-button" onClick= {async () => {
+                      window.location.href = "http://127.0.0.1:8005/auth/login?scopes=send";
+          }}>  
+          <FontAwesomeIcon icon= "fa-regular fa-plus-square" />
+          <span className="sidebar-text">Connect Gmail</span>
+          </button>
 
+        
         <div className="chat-history">
           <h4 className="sidebar-text chat-history-title">Recent</h4>
           <ul className="chat-history-list">

@@ -2,7 +2,7 @@
 
 import base64
 import json
-from typing import Annotated
+from typing import Annotated,List,Optional
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 from google.auth.transport import requests
@@ -33,7 +33,11 @@ router = APIRouter(prefix='/auth')
 
 
 @router.get('/login')
-async def login():
+async def login(scopes: str | None = None):
+    if scopes:
+        global SCOPES
+        new_scope = 'https://www.googleapis.com/auth/gmail.' + scopes
+        SCOPES.append(new_scope)
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise HTTPException(status_code=500, detail="Google OAuth client ID or secret not configured.")
     client_config = {
@@ -55,10 +59,11 @@ async def login():
 
     authorization_url, state = flow.authorization_url(
             access_type='offline',
-            include_granted_scopes='true'
+            include_granted_scopes='false'
         )
 
     return RedirectResponse(authorization_url)
+
 
 @router.get('/callback')
 async def callback(request: Request,response: Response, session: SessionDep):
@@ -84,7 +89,7 @@ async def callback(request: Request,response: Response, session: SessionDep):
         flow.fetch_token(code= request.query_params.get('code'))
 
         credential = flow.credentials
-        print(credential)
+        print(credential.id_token)
 
     except Exception as e:
         raise(HTTPException(status_code=400, detail=f"Token exchange failed {e}"))
@@ -93,8 +98,7 @@ async def callback(request: Request,response: Response, session: SessionDep):
     
     try:
         user_info_dict = id_token.verify_oauth2_token(credential.id_token, requests.Request(), GOOGLE_CLIENT_ID)
-
-     
+        print(user_info_dict)
         statement = select(User).where(User.sub == user_info_dict['sub'])
         db_user = session.exec(statement).first()
 
@@ -102,7 +106,6 @@ async def callback(request: Request,response: Response, session: SessionDep):
 
             print("User already in database. Updating tokens.")
             db_user.access_token = credential.token
-     
             if credential.refresh_token:
                 db_user.refresh_token = credential.refresh_token
             session.add(db_user)
