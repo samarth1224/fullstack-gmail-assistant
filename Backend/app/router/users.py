@@ -23,14 +23,21 @@ router  = APIRouter(prefix='/users')
 
 @router.get('/',response_model=UserPublic)
 async def users(user : VerifyUserDep,request: Request):
-    print(request.cookies)
     return user
 
-# @router.get('/websocket',response_model=UserPublic)
-# def get_websocket_token(user : VerifyUserDep):
-#     '''this function checks if user is authenticated or not and than generates a random ID
-#     sends this to server which uses it for securly connecting with websocket.'''
-#     return user
+
+@router.get('/granted_scopes')
+async def granted_scopes(user: VerifyUserDep):
+    scope_string = user.scopes or ""
+    granted_scopes_list = scope_string.strip('{}').split(',')
+    
+    if  'https://www.googleapis.com/auth/gmail.send' in granted_scopes_list:
+        print('i retured')
+        return {'gmail_send': True}
+    else:
+        return {'gmail_send':False}
+    
+
 
 @router.get('/conversations', response_model= list[ConversationPublic])
 async def conversations(session: SessionDep, user: VerifyUserDep): 

@@ -14,11 +14,36 @@ library.add(fas, far, fab);
 
 export default function SideBar({ chat, setChat, currentConversationID, setCurrentConversationID,conversations,setConversations}) {
   const [sideBarOpen, setSideBarOpen] = useState(true);
+  const [gmailAuth,setGmailAuth] = useState(false);
   
 
   const toggleSidebar = () => {
     setSideBarOpen((prev) => !prev);
   };
+
+  useEffect(()=>{
+    let active = true;
+
+    const checkGmailAuth = async () => {
+      try{
+        const response = await axios.get(
+          `http://127.0.0.1:8005/users/granted_scopes`,{
+  
+          withCredentials:true
+        });
+      setGmailAuth(response.data.gmail_send);
+      
+  }catch(error){
+    console.error(error);
+  }
+}; checkGmailAuth();
+ return () => {
+    active = false;
+  };
+},[])
+
+
+
   useEffect(() => {
     let active = true;
     const fetchConversation = async () =>{
@@ -104,7 +129,7 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
         </button>
         <button className="sidebar-button" onClick= {async () => {
                       window.location.href = "http://127.0.0.1:8005/auth/login?scopes=send";
-          }}>  
+          }} disabled={gmailAuth}>  
           <FontAwesomeIcon icon= "fa-regular fa-plus-square" />
           <span className="sidebar-text">Connect Gmail</span>
           </button>

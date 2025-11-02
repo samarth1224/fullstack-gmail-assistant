@@ -19,6 +19,7 @@ class User(UserBase, table=True):
 
     access_token: str | None = Field(default=None)
     refresh_token: str | None = Field(default=None)
+    scopes: str | None = Field(default= None)
 
 class UserPublic(UserBase):
     user_id: UUID

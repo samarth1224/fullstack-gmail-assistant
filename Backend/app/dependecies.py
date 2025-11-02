@@ -18,12 +18,12 @@ async def verify_user(request: Request,session: Annotated [Session,Depends(get_s
     '''
     Dependecy to check user auth status.
     '''
-    print('I ')
-    print(token)
-    print(request.cookies)
+    # print('I ')
+    # print(token)
+    # print(request.cookies)
 
     try:
-        id_info = id_token.verify_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        id_info = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
         sub = id_info['sub']
         print(sub)
     except:

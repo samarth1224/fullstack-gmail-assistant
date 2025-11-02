@@ -22,8 +22,6 @@ async def message(session:SessionDep, websocket: WebSocket,conversationid: str):
     await websocket.accept()
     user_id = session.exec(select(Conversation.user_id).where(Conversation.conversation_id == conversationid)).first()
     
-    
-
     try:
         while True:
             data = await websocket.receive_text()
