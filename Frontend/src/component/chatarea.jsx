@@ -71,7 +71,7 @@ export default function ChatArea({ chats, setChat ,currentConversationID, setCur
   useEffect(() => {
     if (!currentConversationID) return;
  
-    const socketUrl = `ws://127.0.0.1:8005/ws/${currentConversationID}`;
+    const socketUrl = `ws://${process.env.REACT_APP_BACKEND_URL.replace("http://", "")}/ws/${currentConversationID}`;
       ws.current = new WebSocket(socketUrl);
 
          // Connection opened
@@ -140,7 +140,7 @@ export default function ChatArea({ chats, setChat ,currentConversationID, setCur
     else{  
         try {
       const response = await axios.post(
-        `http://127.0.0.1:8005/users/newconversation`, {},
+        `${process.env.REACT_APP_BACKEND_URL}/users/newconversation`, {},
         {
           withCredentials: true,
         }

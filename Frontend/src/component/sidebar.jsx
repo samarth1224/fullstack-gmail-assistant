@@ -27,7 +27,7 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
     const checkGmailAuth = async () => {
       try{
         const response = await axios.get(
-          `http://127.0.0.1:8005/users/granted_scopes`,{
+          `${process.env.REACT_APP_BACKEND_URL}/users/granted_scopes`,{
   
           withCredentials:true
         });
@@ -49,7 +49,7 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
     const fetchConversation = async () =>{
     try{
       const response = await axios.get(
-           `http://127.0.0.1:8005/users/conversations`,
+           `${process.env.REACT_APP_BACKEND_URL}/users/conversations`,
         {
           withCredentials: true,
         }
@@ -69,7 +69,7 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
   const openConversation = async (id) => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8005/users/messages/${id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/messages/${id}`,
         {
           withCredentials: true,
         }
@@ -128,7 +128,7 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
           <span className="sidebar-text">New Chat</span>
         </button>
         <button className="sidebar-button" onClick= {async () => {
-                      window.location.href = "http://127.0.0.1:8005/auth/login?scopes=send";
+                      window.location.href = `${process.env.REACT_APP_BACKEND_URL}auth/login?scopes=send`;
           }} disabled={gmailAuth}>  
           <FontAwesomeIcon icon= "fa-regular fa-plus-square" />
           <span className="sidebar-text">Connect Gmail</span>

@@ -23,7 +23,7 @@ from dotenv import load_dotenv
  
 
 load_dotenv()
-REDIRECT_URI = os.getenv('REDIRECT_URI', "http://127.0.0.1:8005/auth/callback")
+REDIRECT_URI = os.getenv('REDIRECT_URI')
 
 APP_NAME = "gmail_agent"
 

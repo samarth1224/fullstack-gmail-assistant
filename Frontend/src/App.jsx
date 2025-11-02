@@ -15,7 +15,7 @@ function useAuth() {
     const verifyAuth = async () => {
       setIsLoading(true);
       try {
-        await axios.get("http://127.0.0.1:8005/users/", {
+        await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/`, {
           withCredentials: true,
         });
         if (active) setAuthStatus(true);

@@ -7,7 +7,7 @@ import axios from "axios";
 function GoogleLogin() {
  
   const login = async () => {
-    window.location.href = "http://127.0.0.1:8005/auth/login";
+    window.location.href = `${process.env.REACT_APP_BACKEND_URL}/auth/login`;
   };
 
   return (
