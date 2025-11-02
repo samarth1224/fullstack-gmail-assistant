@@ -27,7 +27,7 @@ REDIRECT_URI = os.getenv('REDIRECT_URI', "http://127.0.0.1:8005/auth/callback")
 
 APP_NAME = "gmail_agent"
 
-dbsession = next(get_session()) # Removed module-level session
+dbsession = next(get_session()) 
 
 session_service = DatabaseSessionService(
     db_url=os.getenv('DATABASE_URL')

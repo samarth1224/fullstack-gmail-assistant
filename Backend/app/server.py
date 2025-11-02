@@ -15,7 +15,7 @@ app  = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000","https://fullstack-gmail-assistant.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,7 +27,7 @@ app.include_router(websocket.router)
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "This is the Server"}
 
 
 

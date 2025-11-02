@@ -30,7 +30,7 @@ async def users(user : VerifyUserDep,request: Request):
 async def granted_scopes(user: VerifyUserDep):
     scope_string = user.scopes or ""
     granted_scopes_list = scope_string.strip('{}').split(',')
-    
+
     if  'https://www.googleapis.com/auth/gmail.send' in granted_scopes_list:
         print('i retured')
         return {'gmail_send': True}
@@ -58,9 +58,8 @@ async def messages(conversation_id: str, session: SessionDep,user: VerifyUserDep
 @router.post('/newconversation')
 async def add_new_conversation(session: SessionDep,user: VerifyUserDep):
     conversation_dict = {
-        "conversation_name": "New Conversation",  # required
-          # optional, defaults to utcnow()
-        "user_id": user.user_id # replace with actual user UUID
+        "conversation_name": "New Conversation",  
+        "user_id": user.user_id 
     }
     new_conversation = Conversation.model_validate(conversation_dict)
     session.add(new_conversation)

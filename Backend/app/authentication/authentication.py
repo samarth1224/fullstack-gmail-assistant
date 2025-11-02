@@ -103,7 +103,7 @@ async def callback(request: Request,response: Response, session: SessionDep):
     except Exception as e:
         raise(HTTPException(status_code=400, detail=f"Token exchange failed {e}"))
     
-    response = RedirectResponse(url ="http://localhost:3000/app")
+    response = RedirectResponse(url ="https://fullstack-gmail-assistant.vercel.app/app")
 
     response.set_cookie(key = 'token', value=credential.id_token,httponly=True,samesite="None",secure=True)
     
