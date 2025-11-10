@@ -124,7 +124,7 @@ async def callback(request: Request,response: Response, session: SessionDep):
                 sub=user_info_dict['sub'],
                 emailid=user_info_dict['email'],
                 username=user_info_dict.get('name', 'N/A'), 
-                access_token=credential.access_token,
+                access_token=credential.token,
                 refresh_token=credential.refresh_token,
                 scopes = credential.scopes
             )
