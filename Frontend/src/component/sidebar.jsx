@@ -128,7 +128,7 @@ export default function SideBar({ chat, setChat, currentConversationID, setCurre
           <span className="sidebar-text">New Chat</span>
         </button>
         <button className="sidebar-button" onClick= {async () => {
-                      window.location.href = `${process.env.REACT_APP_BACKEND_URL}auth/login?scopes=send`;
+                      window.location.href = `${process.env.REACT_APP_BACKEND_URL}/auth/login?scopes=send`;
           }} disabled={gmailAuth}>  
           <FontAwesomeIcon icon= "fa-regular fa-plus-square" />
           <span className="sidebar-text">Connect Gmail</span>
