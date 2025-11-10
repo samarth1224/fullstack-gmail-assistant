@@ -12,22 +12,6 @@ from .router import users, websocket
 APP_NAME = 'gmail_agent'
 
 
-app  = FastAPI()
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000","https://fullstack-gmail-assistant.vercel.app"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.include_router(users.router)
-app.include_router(authentication.router)
-app.include_router(websocket.router)
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Code to run on application startup
@@ -44,6 +28,22 @@ async def lifespan(app: FastAPI):
 
 # Tell FastAPI to use this lifespan function
 app = FastAPI(lifespan=lifespan)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000","https://fullstack-gmail-assistant.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(users.router)
+app.include_router(authentication.router)
+app.include_router(websocket.router)
+
+
+
 
 
 @app.get("/")
