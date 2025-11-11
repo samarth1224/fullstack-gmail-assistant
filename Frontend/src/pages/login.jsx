@@ -13,7 +13,7 @@ function GoogleLogin() {
   return (
     <div>
       {" "}
-      <button className="google-sign-in-button" onClick={login}>
+      <button className="sign-in-button google" onClick={login}>
         {" "}
         google sign in{" "}
       </button>{" "}
@@ -26,7 +26,7 @@ function LoginBox() {
     <div className="login-box">
       <GoogleLogin />
       <div> or </div>
-      <button> Continue as Guest </button>
+      <button className="sign-in-button guest"> Continue as Guest </button>
       
       
     </div>

@@ -26,17 +26,28 @@
 
 .input-buttons {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
-#submit-button {
-  margin-left: 90%;
+.submit-button {
+  margin:1%;
+  padding: 0.8em;
   background-color: #1b1c1d;
+  color: white; 
   border: none;
-  padding: 2%;
-}
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 8px;
 
-#submit-button svg {
-  color: white;
+}
+.submit-button:hover{
+  background-color: #eaf1ff;
+  color:#1b1c1d;
+}
+.submit-button:focus-visible {
+  outline: 2px solid #eaf1ff;
+  outline-offset: 2px;
 }
 
 .conversation-area {

@@ -34,8 +34,8 @@ function ConversationArea({ chats }) {
 
 function SubmitButton({ onClick }) {
   return (
-    <button id="submit-button" onClick={onClick}>
-      {" "}
+    <button className="submit-button" onClick={onClick}>
+     
       <FontAwesomeIcon icon="fa-solid fa-paper-plane" />{" "}
     </button>
   );

@@ -8,7 +8,12 @@
 }
 
 
-
+.sign-in-button.google:hover {
+  background: #c23321;
+}
+.sign-in-button.guest:hover {
+  background: #3578d8;
+}
 label {
   /* height: 2rem; */
   margin-top: 5%;
@@ -19,7 +24,7 @@ label {
   color: #333;
 }
 
-button {
+.sign-in-button {
   background: #db4437;
   color: white;
   font-weight: 500;
@@ -29,7 +34,7 @@ button {
   min-width: 100%;
   cursor: pointer;
 }
-button:hover {
+.sign-in-button:hover {
   background: #c23321;
 }
 
