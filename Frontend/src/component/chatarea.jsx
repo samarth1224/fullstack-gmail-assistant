@@ -71,7 +71,7 @@ export default function ChatArea({ chats, setChat ,currentConversationID, setCur
   useEffect(() => {
     if (!currentConversationID) return;
  
-    const socketUrl = `ws://${process.env.REACT_APP_BACKEND_URL.replace("http://", "")}/ws/${currentConversationID}`;
+    const socketUrl = `ws://${process.env.REACT_APP_BACKEND_URL.replace("https://", "")}/ws/${currentConversationID}`;
       ws.current = new WebSocket(socketUrl);
 
          // Connection opened
@@ -130,7 +130,7 @@ export default function ChatArea({ chats, setChat ,currentConversationID, setCur
     };
   }, [currentConversationID]);
 
-  // To send message manually (optional)
+  // To send message
   const sendMessage = async () => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(input);
