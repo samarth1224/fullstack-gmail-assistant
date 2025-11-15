@@ -71,7 +71,7 @@ export default function ChatArea({ chats, setChat ,currentConversationID, setCur
   useEffect(() => {
     if (!currentConversationID) return;
  
-    const socketUrl = `ws://${process.env.REACT_APP_BACKEND_URL.replace("https://", "")}/ws/${currentConversationID}`;
+    const socketUrl = `wss://${process.env.REACT_APP_BACKEND_URL.replace("https://", "")}/ws/${currentConversationID}`;
       ws.current = new WebSocket(socketUrl);
 
          // Connection opened
